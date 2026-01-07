@@ -29,5 +29,6 @@ public class UserEntity {
     @Column(unique = true)
     private String email;
 
-    private String password_hash;
+    @Column(name = "password_hash")
+    private String password;
 }
