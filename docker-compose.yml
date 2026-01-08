@@ -9,11 +9,16 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: auth_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - app-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d auth_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   data-api:
     build: ./dataapi
@@ -22,7 +27,7 @@ services:
       - "8081:8081"
     environment:
       SERVER_PORT: 8081
-      APP_INTERNAL_TOKEN: ${INTERNAL_TOKEN:-secret-123} #for test task token will be here
+      APP_INTERNAL_TOKEN: secret-123
     networks:
       - app-network
 
@@ -36,11 +41,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: root
-      APP_INTERNAL_TOKEN: ${INTERNAL_TOKEN:-secret-123} #for test task token will be here
-      JWT_SECRET: ${JWT_SECRET:-mySuperSecretKeyForJwtSigning1234567890}
+      APP_INTERNAL_TOKEN: secret-123
+      APP_DATA_API_URL: http://data-api:8081
+      JWT_SECRET: mySuperSecretKeyForJwtSigning1234567890mySuperSecretKeyForJwtSigning1234567890
     depends_on:
-      - postgres
-      - data-api
+      postgres:
+        condition: service_healthy
+      data-api:
+        condition: service_started
     networks:
       - app-network
 
