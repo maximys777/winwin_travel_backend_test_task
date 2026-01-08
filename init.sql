@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS processing_logs (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    input_text TEXT,
+    output_text TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
