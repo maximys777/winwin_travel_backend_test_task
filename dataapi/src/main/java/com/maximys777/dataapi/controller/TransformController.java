@@ -22,8 +22,7 @@ public class TransformController {
     public ResponseEntity<TransformResponse> transform(
             @RequestBody TransformRequest request,
             @RequestHeader("X-Internal-Token") String token) {
-        String result = transformService.processText(request.text(), token);
 
-        return ResponseEntity.ok(new TransformResponse(result));
+        return ResponseEntity.ok(transformService.processText(request.text(), token));
     }
 }
